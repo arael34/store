@@ -32,7 +32,7 @@ func (database *Database) GetProducts() ([]*Product, error) {
 	return products, nil
 }
 
-func Connect(env *Env) error {
+func Connect(env *Env) (*Database, error) {
 	db := &Database{}
 
 	var cancel context.CancelFunc
@@ -42,17 +42,17 @@ func Connect(env *Env) error {
 	var err error
 	db.Client, err = mongo.NewClient(options.Client().ApplyURI(env.DSI))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = db.Client.Connect(db.Ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	database := db.Client.Database(env.DatabaseName)
 	db.Products = database.Collection("Products")
 	db.Sessions = database.Collection("Sessions")
 
-	return nil
+	return db, nil
 }

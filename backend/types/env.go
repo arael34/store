@@ -5,3 +5,7 @@ type Env struct {
 	DatabaseName string
 	StripeKey    string
 }
+
+func LoadEnv() (*Env, error) {
+	return &Env{}, nil
+}
