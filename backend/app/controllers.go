@@ -78,7 +78,7 @@ func (app *App) AddToCart(w http.ResponseWriter, r *http.Request) {
 	session := app.Database.Sessions.FindOneAndUpdate(
 		app.Database.Ctx,
 		types.NewSession(&cookie), // TODO vvv
-		bson.M{"$push": bson.M{"cart.orders": bson.M{"productId": "1234", "quantity": 1}}},
+		bson.M{"$push": bson.M{"cart.orders": bson.M{"product._id": "1234", "quantity": 1}}},
 		opts,
 	)
 
@@ -120,7 +120,7 @@ func (app *App) RemoveFromCart(w http.ResponseWriter, r *http.Request) {
 		if err = app.Database.Sessions.FindOneAndUpdate(
 			app.Database.Ctx,
 			bson.M{"SessionToken": cookie},
-			bson.M{"$pull": bson.M{"cart.orders": bson.M{"productId": product.ProductId}}},
+			bson.M{"$pull": bson.M{"cart.orders": bson.M{"product._id": product.Product.ID}}},
 		).Err(); err != nil {
 			http.Error(w, "Error removing product from cart", http.StatusInternalServerError)
 			return
@@ -137,36 +137,37 @@ func (app *App) ViewCart(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// TODO get cookie from request
-	// cookie := ""
+	cookie := ""
 
-	/*
-		// if r.cookie is nil, return empty cart
-		if cookie == "" {
-			cart = &types.Cart{}
-			json.NewEncoder(w).Encode(cart)
-			return
-		}
+	// if r.cookie is nil, return empty cart
+	if cookie == "" {
+		cart := &types.Cart{}
+		json.NewEncoder(w).Encode(cart)
+		return
+	}
 
-		// DB stuff
+	var products []*types.ProductOrder
 
-		// if error, http.Error(w, "Error viewing cart", http.StatusInternalServerError)
+	cur, err := app.Database.Sessions.Find(
+		app.Database.Ctx,
+		bson.M{"sessiontoken": cookie},
+	)
+	if err != nil {
+		http.Error(
+			w,
+			"Database error or no cart found",
+			http.StatusInternalServerError,
+		)
+		return
+	}
 
+	err = cur.All(app.Database.Ctx, &products)
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
 
-
-		cur, err := app.Database.Products.Find(app.Database.Ctx, bson.D{})
-		if err != nil {
-			http.Error(w, "Database error", http.StatusInternalServerError)
-			return
-		}
-
-		err = cur.All(app.Database.Ctx, &products)
-		if err != nil {
-			http.Error(w, "Database error", http.StatusInternalServerError)
-			return
-		}
-
-		json.NewEncoder(w).Encode(products)
-	*/
+	json.NewEncoder(w).Encode(products)
 }
 
 func (app *App) UpdateCart(w http.ResponseWriter, r *http.Request) {
@@ -184,10 +185,17 @@ func (app *App) ClearCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// If r.cookie is nil, return
-	// http.Error(w, "No cart found", http.StatusBadRequest)
+	// TODO get cookie from request
+	cookie := ""
 
-	// DB stuff
+	err := app.Database.Sessions.FindOneAndUpdate(
+		app.Database.Ctx,
+		bson.M{"SessionToken": cookie},
+		bson.M{"$set": bson.M{"cart.orders": bson.A{}}},
+	).Err()
 
-	// If err, http.Error(w, "Error clearing cart", http.StatusInternalServerError")
+	if err != nil {
+		http.Error(w, "Error clearing cart", http.StatusInternalServerError)
+		return
+	}
 }

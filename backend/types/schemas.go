@@ -16,8 +16,8 @@ type Product struct {
 }
 
 type ProductOrder struct {
-	ProductId *primitive.ObjectID `bson:"productId"`
-	Quantity  int64               `bson:"quantity"`
+	Product  *Product `bson:"product"`
+	Quantity int64    `bson:"quantity"`
 }
 
 type Cart struct {
