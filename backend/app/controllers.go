@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (app *App) RetrieveItems(w http.ResponseWriter, r *http.Request) {
+func (app *App) RetrieveProducts(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -78,7 +78,7 @@ func (app *App) AddToCart(w http.ResponseWriter, r *http.Request) {
 	session := app.Database.Sessions.FindOneAndUpdate(
 		app.Database.Ctx,
 		types.NewSession(&cookie), // TODO vvv
-		bson.M{"$push": bson.M{"cart.orders": bson.M{"product._id": "1234", "quantity": 1}}},
+		bson.M{"$push": bson.M{"cart.orders": bson.M{"productid": "1234", "quantity": 1}}},
 		opts,
 	)
 
@@ -108,19 +108,19 @@ func (app *App) RemoveFromCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var products []*types.ProductOrder
-	err := json.NewDecoder(r.Body).Decode(&products)
+	var orders []*types.ProductOrder
+	err := json.NewDecoder(r.Body).Decode(&orders)
 
 	if err != nil {
 		http.Error(w, "Error decoding request", http.StatusBadRequest)
 		return
 	}
 
-	for _, product := range products {
+	for _, order := range orders {
 		if err = app.Database.Sessions.FindOneAndUpdate(
 			app.Database.Ctx,
 			bson.M{"SessionToken": cookie},
-			bson.M{"$pull": bson.M{"cart.orders": bson.M{"product._id": product.Product.ID}}},
+			bson.M{"$pull": bson.M{"cart.orders": bson.M{"productid": order.ProductId}}},
 		).Err(); err != nil {
 			http.Error(w, "Error removing product from cart", http.StatusInternalServerError)
 			return
@@ -146,8 +146,6 @@ func (app *App) ViewCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var products []*types.ProductOrder
-
 	cur, err := app.Database.Sessions.Find(
 		app.Database.Ctx,
 		bson.M{"sessiontoken": cookie},
@@ -161,13 +159,15 @@ func (app *App) ViewCart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = cur.All(app.Database.Ctx, &products)
+	var orders []*types.ProductOrder
+
+	err = cur.All(app.Database.Ctx, &orders)
 	if err != nil {
 		http.Error(w, "Database error", http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(products)
+	json.NewEncoder(w).Encode(orders)
 }
 
 func (app *App) UpdateCart(w http.ResponseWriter, r *http.Request) {

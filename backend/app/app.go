@@ -26,14 +26,14 @@ func NewApp() (*App, error) {
 }
 
 func (app *App) Run() {
-	// Set up routes
-	http.HandleFunc("/items", app.RetrieveItems)
-	http.HandleFunc("/checkout", app.Checkout)
-	http.HandleFunc("/cart/add", app.AddToCart)
-	http.HandleFunc("/cart/remove", app.RemoveFromCart)
-	http.HandleFunc("/cart/view", app.ViewCart)
-	http.HandleFunc("/cart/update", app.UpdateCart)
-	http.HandleFunc("/cart/clear", app.ClearCart)
+	// Set up api routes
+	http.HandleFunc("/api/products", app.RetrieveProducts)
+	http.HandleFunc("/api/checkout", app.Checkout)
+	http.HandleFunc("/api/cart/add", app.AddToCart)
+	http.HandleFunc("/api/cart/remove", app.RemoveFromCart)
+	http.HandleFunc("/api/cart/view", app.ViewCart)
+	http.HandleFunc("/api/cart/update", app.UpdateCart)
+	http.HandleFunc("/api/cart/clear", app.ClearCart)
 
 	// Serve frontend
 	http.Handle("/", http.FileServer(http.Dir("../frontend/dist")))

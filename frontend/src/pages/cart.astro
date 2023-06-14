@@ -1,0 +1,19 @@
+---
+import CheckoutForm from "../components/CheckoutForm";
+import { viewCart } from "../util/api";
+
+// TODO grab cookie
+const cookie = "";
+
+const cart = await viewCart(cookie); 
+---
+
+<h1>Cart</h1>
+
+{
+    cart.map((product) => {
+        <p>Product in cart</p>
+    })
+}
+
+<CheckoutForm client:load />

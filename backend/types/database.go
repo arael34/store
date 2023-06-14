@@ -56,3 +56,9 @@ func Connect(env *Env) (*Database, error) {
 
 	return db, nil
 }
+
+func (database *Database) Disconnect() {
+	if err := database.Client.Disconnect(context.Background()); err != nil {
+		panic(err)
+	}
+}
