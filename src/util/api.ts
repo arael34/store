@@ -4,14 +4,20 @@
 
 import { ObjectId } from "bson";
 
-function addToCart(productId: string) {
-    let cookie = ""; // TODO get cookie
+function addToCart(
+  productId: string,
+  cookies: { [key: string]: string },
+  setCookies: (name: "cart", value: string) => void
+) {
+    let cookie = cookies.cart;
     if (!cookie) {
       cookie = new ObjectId().toHexString();
+      setCookies("cart", cookie);
     }
-  
+
     const options = {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ "sessionId": cookie, "productId": productId }),
     };
     void fetch(`${window.location.origin}/api/cart/add`, options);
@@ -57,4 +63,4 @@ function viewCart() {
     void fetch(`${window.location.origin}/api/cart/view`, options);
 }
 
-export { addToCart, removeFromCart };
+export { addToCart, removeFromCart, updateCart, clearCart, viewCart };

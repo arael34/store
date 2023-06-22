@@ -12,6 +12,7 @@ export default async function handler(
 
     const { sessionId, productId } = req.body;
 
+
     if (!sessionId || !productId) {
         res.status(400).end();
         return;
@@ -19,7 +20,7 @@ export default async function handler(
 
     const prisma = new PrismaClient();
 
-    const session = await prisma.session.upsert({
+    await prisma.session.upsert({
         where: { id: sessionId },
         update: {
             cart: {
@@ -42,5 +43,5 @@ export default async function handler(
         },
     });
 
-    res.status(200).json({ sessionId: session.id });
+    res.status(200).end();
 }

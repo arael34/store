@@ -1,6 +1,7 @@
-import Image from "next/image"
-import { PrismaClient } from "@prisma/client"
 import { NextApiRequest } from "next";
+import { PrismaClient } from "@prisma/client"
+import Image from "next/image"
+import { useCookies } from "react-cookie";
 import { addToCart } from "@/util/api";
 
 export async function getStaticProps(req: NextApiRequest) {
@@ -25,6 +26,8 @@ type Props = {
 };
 
 export default function Home({ products }: Props) {
+  const [cookies, setCookie] = useCookies(["cart"]);
+
   return (
     <main>
       {products.map((product) => (
@@ -37,7 +40,9 @@ export default function Home({ products }: Props) {
           />
           <h3>{product.name}</h3>
           <p>{product.price}</p>
-          <button onClick={() => addToCart(product.id)}>Add to cart</button>
+          <button onClick={() => addToCart(product.id, cookies, setCookie)}>
+            Add to cart
+          </button>
         </div>
       ))}
     </main>
