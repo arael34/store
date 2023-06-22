@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { PrismaClient } from "@prisma/client"
 import { NextApiRequest } from "next";
+import { addToCart } from "@/util/api";
 
 export async function getStaticProps(req: NextApiRequest) {
   const prisma = new PrismaClient();
@@ -22,15 +23,6 @@ type Props = {
     image: string;
   }[];
 };
-
-function addToCart(productId: string) {
-  const options = {
-    method: "POST",
-    body: JSON.stringify({ "productId": productId }),
-  };
-  // Client side fetch, so don't use process.env
-  void fetch(`${window.location.origin}/api/cart/add`, options);
-}
 
 export default function Home({ products }: Props) {
   return (

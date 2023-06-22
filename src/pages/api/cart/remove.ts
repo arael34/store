@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { cookies } from "next/headers";
 
 export default async function handler(
     req: NextApiRequest,
@@ -11,9 +10,10 @@ export default async function handler(
         return;
     }
 
-    const cookie = cookies().get("SESSION");
-    if (!cookie) {
-        res.status(401).end();
+    const { sessionId } = req.body;
+
+    if (!sessionId) {
+        res.status(400).end();
         return;
     }
 
@@ -22,7 +22,7 @@ export default async function handler(
     const prisma = new PrismaClient();
 
     await prisma.session.update({
-        where: { id: cookie.value },
+        where: { id: sessionId },
         data: { cart: { deleteMany: { where: { id: productId } } } },
     });
 
