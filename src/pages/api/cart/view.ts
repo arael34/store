@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 
-async function handler(
+export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse,
 ) {
@@ -10,8 +10,8 @@ async function handler(
         return;
     }
 
-    const { sessionId } = req.body;
-    if (!sessionId) {
+    const { sessionId } = req.query;
+    if (!sessionId || typeof sessionId !== "string") {
         res.status(200).json({ cart: [] });
         return;
     }

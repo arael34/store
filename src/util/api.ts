@@ -1,8 +1,7 @@
 /**
  * Client side API calls. Don't use server stuff like process.env.
  */
-
-import { ObjectId } from "bson";
+import { v1 as uuid } from "uuid";
 
 function addToCart(
   productId: string,
@@ -11,7 +10,7 @@ function addToCart(
 ) {
     let cookie = cookies.cart;
     if (!cookie) {
-      cookie = new ObjectId().toHexString();
+      cookie = uuid();
       setCookies("cart", cookie);
     }
 
@@ -53,14 +52,16 @@ function clearCart() {
     void fetch(`${window.location.origin}/api/cart/clear`, options);
 }
 
-function viewCart() {
-    let cookie = ""; // TODO get cookie
-    
+async function viewCart(cookie: string) {    
     const options = {
-      method: "POST",
-      body: JSON.stringify({ "sessionId": cookie }),
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
     };
-    void fetch(`${window.location.origin}/api/cart/view`, options);
+    const res = await fetch(
+      `${window.location.origin}/api/cart/view?sessionId=${cookie}`,
+      options
+    );
+    return await res.json();
 }
 
 export { addToCart, removeFromCart, updateCart, clearCart, viewCart };

@@ -18,13 +18,13 @@ model Product {
 }
 
 model Session {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  id      String @id @default(uuid()) @map("_id")
   cart    ProductOrder[]
   expires DateTime
 }
 
 type ProductOrder {
-  id        String @default(cuid())
+  id        String @default(uuid())
   productid String
   quantity  Int
 }
