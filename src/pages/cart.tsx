@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useCookies } from "react-cookie";
-import { viewCart } from "@/util/api";
+import { viewCart, removeFromCart, clearCart } from "@/util/api";
 
 type ItemSchema = {
-  id: number;
-  productId: string;
+  id: string;
+  productid: string;
   quantity: number;
 };
 
@@ -24,20 +25,32 @@ function Cart() {
     return <h1>Loading...</h1>;
   }
 
-  if (!cart.length) {
-    return <h1>No items in your cart.</h1>;
-  }
-
   return (
     <div>
-      <h1>Cart</h1>
+      <Link href="/">Home</Link>
+      <div className="flex"> 
+        <h1>Cart</h1>
+        <button onClick={() => clearCart(cookies.cart)}>
+          Clear cart
+        </button>
+      </div>
       <ul>
-        {cart.map((item: ItemSchema) => (
-          <li key={item.id}>
-            {item.productId} - {item.quantity}
-          </li>
-        ))}
+        {cart.length ? cart.map((item: ItemSchema) => (
+          <>
+            <li key={item.id}>
+              {item.productid} - {item.quantity}
+            </li>
+            <button onClick={() => removeFromCart(item.productid, cookies.cart)}>
+              Remove
+            </button>
+          </>
+        )) : (
+          <p>No items in your cart.</p>
+        )}
       </ul>
+      <button>
+        Checkout
+      </button>
     </div>
   );
 }

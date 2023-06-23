@@ -10,20 +10,18 @@ export default async function handler(
         return;
     }
 
-    const { sessionId } = req.body;
+    const { sessionId, productId } = req.body;
 
-    if (!sessionId) {
+    if (!sessionId || !productId) {
         res.status(400).end();
         return;
     }
-
-    const { productId } = req.body;
 
     const prisma = new PrismaClient();
 
     await prisma.session.update({
         where: { id: sessionId },
-        data: { cart: { deleteMany: { where: { id: productId } } } },
+        data: { cart: { deleteMany: { where: { productid: productId } } } },
     });
 
     res.status(200).end();

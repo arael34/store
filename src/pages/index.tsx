@@ -1,6 +1,7 @@
 import { NextApiRequest } from "next";
 import { PrismaClient } from "@prisma/client"
 import Image from "next/image"
+import Link from "next/link";
 import { useCookies } from "react-cookie";
 import { addToCart } from "@/util/api";
 
@@ -30,6 +31,7 @@ export default function Home({ products }: Props) {
 
   return (
     <main>
+      <Link href="/cart">View cart</Link>
       {products.map((product) => (
         <div key={product.id}>
           <Image

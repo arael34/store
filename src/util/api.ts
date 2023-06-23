@@ -22,31 +22,32 @@ function addToCart(
     void fetch(`${window.location.origin}/api/cart/add`, options);
 }
 
-function removeFromCart(productId: string) {
-    let cookie = ""; // TODO get cookie
-    
+function removeFromCart(productId: string, cookie: string) {    
     const options = {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ "sessionId": cookie, "productId": productId }),
     };
     void fetch(`${window.location.origin}/api/cart/remove`, options);
 }
 
-function updateCart(productId: string, quantity: number) {
-    let cookie = ""; // TODO get cookie
-    
+function updateCart(productId: string, quantity: number, cookie: string) {    
     const options = {
       method: "POST",
-      body: JSON.stringify({ "sessionId": cookie, "productId": productId, "quantity": quantity }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        "sessionId": cookie,
+        "productId": productId,
+        "quantity": quantity,
+      }),
     };
     void fetch(`${window.location.origin}/api/cart/update`, options);
 }
 
-function clearCart() {
-    let cookie = ""; // TODO get cookie
-    
+function clearCart(cookie: string) {    
     const options = {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ "sessionId": cookie }),
     };
     void fetch(`${window.location.origin}/api/cart/clear`, options);
