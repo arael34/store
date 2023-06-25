@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useCookies } from "react-cookie";
-import { viewCart, removeFromCart, clearCart } from "@/util/api";
+import { viewCart, removeFromCart, clearCart, checkout } from "@/util/api";
 
 type ItemSchema = {
   id: string;
@@ -48,7 +48,7 @@ function Cart() {
           <p>No items in your cart.</p>
         )}
       </ul>
-      <button>
+      <button onClick={() => void checkout(cookies.cart)}>
         Checkout
       </button>
     </div>

@@ -65,4 +65,16 @@ async function viewCart(cookie: string) {
     return await res.json();
 }
 
-export { addToCart, removeFromCart, updateCart, clearCart, viewCart };
+async function checkout(cookie: string) {
+    const options = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ "sessionId": cookie }),
+    };
+    await fetch(
+      `${window.location.origin}/api/checkout`,
+      options,
+    );
+}
+
+export { addToCart, removeFromCart, updateCart, clearCart, viewCart, checkout };
