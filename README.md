@@ -1,2 +1,4 @@
 # store
-store
+store using nextjs & stripe
+
+## TODO

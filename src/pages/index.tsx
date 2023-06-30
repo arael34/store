@@ -1,7 +1,7 @@
 import { NextApiRequest } from "next";
 import { PrismaClient } from "@prisma/client"
 import Image from "next/image"
-import Link from "next/link";
+import Header from "@/components/Header";
 import { useCookies } from "react-cookie";
 import { addToCart } from "@/util/api";
 
@@ -29,9 +29,11 @@ type Props = {
 export default function Home({ products }: Props) {
   const [cookies, setCookie] = useCookies(["cart"]);
 
+  const count = cookies.cart ? cookies.cart.length : 0;
+
   return (
-    <main>
-      <Link href="/cart">View cart</Link>
+    <main className="w-5/6 pt-1 mx-auto">
+      <Header count={count} />
       {products.map((product) => (
         <div key={product.id}>
           <Image
